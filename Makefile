@@ -1,6 +1,6 @@
-SPARROW_VERSION := 2.2.3
-SPARROW_DEBVERSION := 2.2.3-1
-SPARROW_PGP_SIG := E94618334C674B40
+# Ashigaru Terminal build configuration
+ASHIGARU_VERSION := 1.8.4
+ASHIGARU_COMMIT := main
 # sha256 hashes can be found in https://github.com/mikefarah/yq/releases/download/v4.40.7/checksums-bsd
 YQ_VERSION := 4.40.7
 YQ_SHA_AMD64 := 4f13ee9303a49f7e8f61e7d9c87402e07cc920ae8dfaaa8c10d7ea1b8f9f48ed
@@ -51,9 +51,8 @@ else
 	docker buildx build --tag start9/$(PKG_ID)/main:$(PKG_VERSION) \
 		--build-arg ARCH=aarch64 \
 		--build-arg PLATFORM=arm64 \
-		--build-arg SPARROW_VERSION=$(SPARROW_VERSION) \
-		--build-arg SPARROW_DEBVERSION=$(SPARROW_DEBVERSION) \
-		--build-arg SPARROW_PGP_SIG=$(SPARROW_PGP_SIG) \
+		--build-arg ASHIGARU_VERSION=$(ASHIGARU_VERSION) \
+		--build-arg ASHIGARU_COMMIT=$(ASHIGARU_COMMIT) \
 		--build-arg YQ_VERSION=$(YQ_VERSION) \
 		--build-arg YQ_SHA=$(YQ_SHA_ARM64) \
 		--platform=linux/arm64 -o type=docker,dest=docker-images/aarch64.tar -f Dockerfile.aarch64 .
@@ -66,9 +65,8 @@ else
 	docker buildx build --tag start9/$(PKG_ID)/main:$(PKG_VERSION) \
 		--build-arg ARCH=x86_64 \
 		--build-arg PLATFORM=amd64 \
-		--build-arg SPARROW_VERSION=$(SPARROW_VERSION) \
-		--build-arg SPARROW_DEBVERSION=$(SPARROW_DEBVERSION) \
-		--build-arg SPARROW_PGP_SIG=$(SPARROW_PGP_SIG) \
+		--build-arg ASHIGARU_VERSION=$(ASHIGARU_VERSION) \
+		--build-arg ASHIGARU_COMMIT=$(ASHIGARU_COMMIT) \
 		--build-arg YQ_VERSION=$(YQ_VERSION) \
 		--build-arg YQ_SHA=$(YQ_SHA_AMD64) \
 		--platform=linux/amd64 -o type=docker,dest=docker-images/x86_64.tar .

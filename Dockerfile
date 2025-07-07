@@ -38,9 +38,8 @@ FROM ghcr.io/linuxserver/baseimage-kasmvnc:debianbookworm-64c54f55-ls117 AS buil
 # these are specified in Makefile
 ARG ARCH
 ARG PLATFORM
-ARG SPARROW_VERSION
-ARG SPARROW_DEBVERSION
-ARG SPARROW_PGP_SIG
+ARG ASHIGARU_VERSION
+ARG ASHIGARU_COMMIT
 ARG YQ_VERSION
 ARG YQ_SHA
 
@@ -50,6 +49,8 @@ RUN \
   # remove dunst, we use xfce4-notifyd instead
   DEBIAN_FRONTEND=noninteractive \
   apt-get remove -y dunst && \
+  # create missing directories for OpenJDK installation
+  mkdir -p /usr/share/man/man1 && \
   # install required packages
   DEBIAN_FRONTEND=noninteractive \
   apt-get install -y --no-install-recommends \
@@ -73,47 +74,109 @@ RUN \
     # other
     wget \
     socat \
-    gnupg && \
-  # remove unused packages from base image
-  DEBIAN_FRONTEND=noninteractive \
-  apt-get remove --purge --autoremove -y \
-    containerd.io \
-    cpp \
-    cpp-12 \
-    docker-ce \
-    docker-ce-cli \
-    docker-buildx-plugin \
-    docker-compose-plugin \
-    fonts-noto-color-emoji \
-    fonts-noto-core \
-    intel-media-va-driver \
-    mesa-va-drivers \
-    mesa-vulkan-drivers \
-    x11-apps \
-    xserver-xorg-video-amdgpu \
-    xserver-xorg-video-ati \
-    xserver-xorg-video-intel \
-    xserver-xorg-video-nouveau \
-    xserver-xorg-video-qxl \
-    xserver-xorg-video-radeon \
-    perl \
-    locales-all && \
-  # remove left-over locales and generate default
-  rm -rf $(ls -d /usr/share/locale/* | grep -vw /usr/share/locale/en) && \
-  localedef -i en_US -f UTF-8 en_US.UTF-8 && \
-  # upgrade remaining packages
+    gnupg \
+    ca-certificates && \
+  # upgrade packages before building
   DEBIAN_FRONTEND=noninteractive \
   apt-get upgrade -y && \
   # install yq
   wget -qO /tmp/yq https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_${PLATFORM} && \
   echo "${YQ_SHA} /tmp/yq" | sha256sum --check || exit 1 && \ 
-  mv /tmp/yq /usr/local/bin/yq && chmod +x /usr/local/bin/yq && \
+  mv /tmp/yq /usr/local/bin/yq && chmod +x /usr/local/bin/yq
+
+# Copy and install Ashigaru Terminal .deb package
+COPY ashigaru_terminal_*_amd64.deb /tmp/
+
+# Install Ashigaru Terminal from .deb package
+RUN \
+  echo "**** install Ashigaru Terminal ****" && \
+  # Find the .deb file
+  DEB_FILE=$(ls /tmp/ashigaru_terminal_*_amd64.deb | head -1) && \
+  echo "Installing Ashigaru Terminal from: $DEB_FILE" && \
+  # Install the .deb package
+  DEBIAN_FRONTEND=noninteractive \
+  apt-get install -y "$DEB_FILE" && \
+  # Verify installation
+  echo "Ashigaru Terminal installation complete. Checking installation:" && \
+  ls -la /opt/ && \
+  # Find where it was installed and create compatibility symlinks if needed
+  if [ -d "/opt/ashigaru-terminal" ]; then \
+    echo "Found installation at /opt/ashigaru-terminal" && \
+    ls -la /opt/ashigaru-terminal/ && \
+    echo "Contents of bin directory:" && \
+    ls -la /opt/ashigaru-terminal/bin/ && \
+    echo "Contents of lib directory:" && \
+    ls -la /opt/ashigaru-terminal/lib/ && \
+    echo "All files in ashigaru-terminal:" && \
+    find /opt/ashigaru-terminal -type f -executable; \
+  elif [ -d "/opt/Ashigaru" ]; then \
+    echo "Found installation at /opt/Ashigaru, creating symlink" && \
+    ln -s /opt/Ashigaru /opt/ashigaru-terminal && \
+    ls -la /opt/Ashigaru/; \
+  else \
+    echo "Searching for Ashigaru installation..." && \
+    find /opt /usr/bin /usr/local/bin -name "*ashigaru*" -o -name "*Ashigaru*" 2>/dev/null | head -10; \
+  fi && \
+  # Create desktop integration
+  echo "**** create desktop integration ****" && \
+  mkdir -p /usr/share/applications && \
+  # Try to find the actual executable path
+  ASHIGARU_EXEC="" && \
+  if [ -f "/opt/ashigaru-terminal/bin/Ashigaru-terminal" ]; then \
+    ASHIGARU_EXEC="/opt/ashigaru-terminal/bin/Ashigaru-terminal"; \
+  elif [ -f "/opt/ashigaru-terminal/bin/ashigaru-terminal" ]; then \
+    ASHIGARU_EXEC="/opt/ashigaru-terminal/bin/ashigaru-terminal"; \
+  elif [ -f "/opt/ashigaru-terminal/Ashigaru" ]; then \
+    ASHIGARU_EXEC="/opt/ashigaru-terminal/Ashigaru"; \
+  elif [ -f "/opt/Ashigaru/bin/Ashigaru" ]; then \
+    ASHIGARU_EXEC="/opt/Ashigaru/bin/Ashigaru"; \
+  elif [ -f "/usr/bin/ashigaru-terminal" ]; then \
+    ASHIGARU_EXEC="/usr/bin/ashigaru-terminal"; \
+  else \
+    ASHIGARU_EXEC=$(find /opt /usr/bin -name "*ashigaru*" -o -name "*Ashigaru*" -type f -executable 2>/dev/null | head -1); \
+  fi && \
+  echo "Using executable: $ASHIGARU_EXEC" && \
+  if [ -n "$ASHIGARU_EXEC" ]; then \
+    echo "[Desktop Entry]" > /usr/share/applications/ashigaru-terminal.desktop && \
+    echo "Type=Application" >> /usr/share/applications/ashigaru-terminal.desktop && \
+    echo "Name=Ashigaru Terminal" >> /usr/share/applications/ashigaru-terminal.desktop && \
+    echo "Comment=Privacy-enhanced Bitcoin wallet" >> /usr/share/applications/ashigaru-terminal.desktop && \
+    echo "Exec=$ASHIGARU_EXEC" >> /usr/share/applications/ashigaru-terminal.desktop && \
+    echo "Icon=ashigaru-terminal" >> /usr/share/applications/ashigaru-terminal.desktop && \
+    echo "Categories=Finance;Network;" >> /usr/share/applications/ashigaru-terminal.desktop && \
+    echo "StartupNotify=true" >> /usr/share/applications/ashigaru-terminal.desktop && \
+    echo "Terminal=false" >> /usr/share/applications/ashigaru-terminal.desktop && \
+    # Create convenience symlink if not in standard location
+    if [ ! -f "/usr/local/bin/ashigaru-terminal" ]; then \
+      ln -s "$ASHIGARU_EXEC" /usr/local/bin/ashigaru-terminal; \
+    fi && \
+    echo "Desktop integration complete."; \
+  else \
+    echo "ERROR: Could not find Ashigaru Terminal executable!" && \
+    exit 1; \
+  fi && \
+  # Cleanup
+  rm -f /tmp/ashigaru_terminal_*_amd64.deb
+
+# Cleanup
+RUN \
+  echo "**** cleanup ****" && \
+  # Cleanup
+  echo "Package installation complete" && \
+  # remove unused packages from base image
+  DEBIAN_FRONTEND=noninteractive \
+  apt-get remove --purge --autoremove -y \
+    perl \
+    locales-all || true && \
+  # remove left-over locales and generate default
+  rm -rf $(ls -d /usr/share/locale/* | grep -vw /usr/share/locale/en) && \
+  localedef -i en_US -f UTF-8 en_US.UTF-8 && \
   echo "**** xfce tweaks ****" && \
   rm -f /etc/xdg/autostart/xscreensaver.desktop && \
   # StartOS branding
-  echo "Starting Sparrow on Webtop for StartOS..." > /etc/s6-overlay/s6-rc.d/init-adduser/branding; sed -i '/run_branding() {/,/}/d' /docker-mods && \
+  echo "Starting Ashigaru Terminal on Webtop for StartOS..." > /etc/s6-overlay/s6-rc.d/init-adduser/branding; sed -i '/run_branding() {/,/}/d' /docker-mods && \
   # cleanup and remove some unneeded large binaries
-  echo "**** cleanup ****" && \
+  echo "**** final cleanup ****" && \
   rm /kasmbins/kasm_webcam_server && \
   apt-get autoclean && \
   rm -rf \
@@ -121,25 +184,6 @@ RUN \
     /var/lib/apt/lists/* \
     /var/tmp/* \
     /tmp/*
-
-# Sparrow
-RUN \
-  echo "**** install Sparrow ****" && \
-  # sparrow requires this directory to exist
-  mkdir -p /usr/share/desktop-directories/ && \
-  # Download and install Sparrow (todo: gpg sig verification)
-  wget --quiet https://github.com/sparrowwallet/sparrow/releases/download/${SPARROW_VERSION}/sparrowwallet_${SPARROW_DEBVERSION}_${PLATFORM}.deb \
-               https://github.com/sparrowwallet/sparrow/releases/download/${SPARROW_VERSION}/sparrow-${SPARROW_VERSION}-manifest.txt \
-               https://github.com/sparrowwallet/sparrow/releases/download/${SPARROW_VERSION}/sparrow-${SPARROW_VERSION}-manifest.txt.asc \
-               https://keybase.io/craigraw/pgp_keys.asc && \
-  # verify pgp and sha signatures
-  gpg --import pgp_keys.asc && \
-  gpg --status-fd 1 --verify sparrow-${SPARROW_VERSION}-manifest.txt.asc | grep -q "GOODSIG ${SPARROW_PGP_SIG} Craig Raw <craig@sparrowwallet.com>" || exit 1 && \
-  sha256sum --check sparrow-${SPARROW_VERSION}-manifest.txt --ignore-missing || exit 1 && \
-  DEBIAN_FRONTEND=noninteractive \
-  apt-get install -y ./sparrowwallet_${SPARROW_DEBVERSION}_${PLATFORM}.deb && \
-  # cleanup
-  rm ./sparrow* ./pgp_keys.asc
 
 # start from scratch so we create smaller layers in the resulting image
 FROM scratch
@@ -173,7 +217,9 @@ ENV \
   GTK_THEME=Adwaita:dark \
   GTK2_RC_FILES=/usr/share/themes/Adwaita-dark/gtk-2.0/gtkrc \
   # prevent kasm from touching our rc.xml
-  NO_FULL=1
+  NO_FULL=1 \
+  # Java environment for Ashigaru Terminal
+  JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
 # add local files
 COPY /root /

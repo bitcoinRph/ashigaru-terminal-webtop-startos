@@ -1,21 +1,21 @@
-id: sparrow-webtop
-title: "Sparrow"
-version: 2.2.3
+id: ashigaru-webtop
+title: "Ashigaru Terminal"
+version: 1.0.0
 release-notes: |
-  * Update Sparrow to 2.2.3 - [Release Notes](https://github.com/sparrowwallet/sparrow/releases/tag/2.2.3)
-  * Update Sparrow to 2.2.0 - [Release Notes](https://github.com/sparrowwallet/sparrow/releases/tag/2.2.0)
+  * Initial release of Ashigaru Terminal on Webtop
+  * Ashigaru Terminal is a non-custodial, dedicated Ashigaru Whirlpool client
+  * Features enhanced privacy with Nightjar integration
 license: GPLv3
-wrapper-repo: "https://github.com/remcoros/sparrow-webtop-startos"
-upstream-repo: "https://github.com/sparrowwallet/sparrow"
-support-site: "https://github.com/sparrowwallet/sparrow/issues"
-marketing-site: "https://sparrowwallet.com/"
-donation-url: "https://sparrowwallet.com/donate/"
+wrapper-repo: "https://github.com/linkinparkrulz/ashigaru-webtop-startos"
+upstream-repo: "https://github.com/linkinparkrulz/ashigaru-terminal"
+support-site: "https://github.com/linkinparkrulz/ashigaru-terminal/issues"
+marketing-site: "https://github.com/linkinparkrulz/ashigaru-terminal"
 build: ["make"]
 description:
-  short: Sparrow - Desktop Wallet In Your Browser
+  short: Ashigaru Terminal - A non-custodial, dedicated Ashigaru Whirlpool client
   long: |
-    Sparrow on Webtop is a stripped down version of 'Webtop' (a Linux Desktop Environment) running the Sparrow wallet. 
-    This allows users to access a simple Linux desktop with Sparrow pre-installed directly from their web browser.
+    Ashigaru Terminal on Webtop is a stripped down version of 'Webtop' (a Linux Desktop Environment) running the Ashigaru Terminal. 
+    Ashigaru Terminal is a non-custodial, dedicated Ashigaru Whirlpool client which allows users to enter pools of their choice and continue to build their forward and backwards anonymity sets whilst being in full control of their funds during every stage of coinjoin cycles.
 assets:
   license: LICENSE
   icon: icon.png
@@ -35,7 +35,7 @@ hardware-requirements:
     - aarch64
 health-checks:
   web-ui:
-    name: Sparrow User Interface
+    name: Ashigaru Terminal User Interface
     success-message: Ready to be visited in a web browser
     type: script
 config:
@@ -55,7 +55,7 @@ volumes:
 interfaces:
   main:
     name: User Interface
-    description: Web user interface to display your Sparrow on Webtop Desktop
+    description: Web user interface to display your Ashigaru Terminal on Webtop Desktop
     tor-config:
       port-mapping:
         80: "3000"

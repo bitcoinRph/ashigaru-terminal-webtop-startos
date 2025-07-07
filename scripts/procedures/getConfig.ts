@@ -7,7 +7,7 @@ export const getConfig: T.ExpectedExports.getConfig = compat.getConfig({
     name: "Webtop Title",
     description:
       "This value will be displayed as the title of your browser tab.",
-    default: "Start9 Sparrow on Webtop",
+    default: "Start9 Ashigaru Terminal on Webtop",
     pattern: '^[^\\n"]*$',
     "pattern-description": "Must not contain newline or quote characters.",
     masked: false,
@@ -44,16 +44,16 @@ export const getConfig: T.ExpectedExports.getConfig = compat.getConfig({
     description: "Automatically reconnect when the connection to the desktop is lost or the browser tab has been idle for too long.",
     default: false,
   },
-  sparrow: {
+  ashigaru: {
     type: "object",
-    name: "Sparrow settings",
-    description: "Sparrow settings",
+    name: "Ashigaru Terminal settings",
+    description: "Ashigaru Terminal settings",
     spec: {
       managesettings: {
         type: "boolean",
         name: "Apply settings on startup",
         description:
-          "Disable to manage your own server and proxy settings in Sparrow",
+          "Disable to manage your own server and proxy settings in Ashigaru Terminal",
         default: true,
       },
       server: {
@@ -105,7 +105,7 @@ export const getConfig: T.ExpectedExports.getConfig = compat.getConfig({
       proxy: {
         name: "Use a proxy",
         description:
-          "<p>Use a proxy for external connections (like whirlpool)</p><ul><li><strong>Tor</strong>: Use the Tor Proxy of StartOS (recommended)</li><li><strong>None</strong>: do not use a proxy</li></ul>",
+          "<p>Use a proxy for external connections (enhanced privacy features)</p><ul><li><strong>Tor</strong>: Use the Tor Proxy of StartOS (recommended)</li><li><strong>None</strong>: do not use a proxy</li></ul>",
         type: "union",
         tag: {
           id: "type",
@@ -115,7 +115,7 @@ export const getConfig: T.ExpectedExports.getConfig = compat.getConfig({
             none: "None (not recommended)",
           },
           description:
-            "<p>Use a proxy for external connections (like whirlpool)</p><ul><li><strong>Tor</strong>: Use the Tor Proxy of StartOS (recommended)</li><li><strong>None</strong>: do not use a proxy</li></ul>",
+            "<p>Use a proxy for external connections (enhanced privacy features)</p><ul><li><strong>Tor</strong>: Use the Tor Proxy of StartOS (recommended)</li><li><strong>None</strong>: do not use a proxy</li></ul>",
         },
         default: "tor",
         variants: {

@@ -1,6 +1,6 @@
 #!/bin/sh
 echo
-echo "Initialising Sparrow on Webtop..."
+echo "Initialising Ashigaru Terminal on Webtop..."
 echo
 export PUID=1000
 export PGID=1000
@@ -29,11 +29,11 @@ data:
 EOF
 
 # Copy default files
-if [ ! -f /config/.sparrow/config ]; then
-  echo "No Sparrow config file found, creating default"
-  mkdir -p /config/.sparrow
-  cp /defaults/.sparrow/config /config/.sparrow/config
-  chown -R $PUID:$PGID /config/.sparrow
+if [ ! -f /config/.ashigaru/config ]; then
+  echo "No Ashigaru Terminal config file found, creating default"
+  mkdir -p /config/.ashigaru
+  cp /defaults/.ashigaru/config /config/.ashigaru/config
+  chown -R $PUID:$PGID /config/.ashigaru
 fi
 
 # always overwrite autostart in case we change it
@@ -41,50 +41,50 @@ mkdir -p /config/.config/openbox
 cp /defaults/autostart /config/.config/openbox/autostart
 chown -R abc:abc /config/.config/openbox
 
-# Manage Sparrow settings?
-if [ $(yq e '.sparrow.managesettings' /root/data/start9/config.yaml) = "true" ]; then
+# Manage Ashigaru Terminal settings?
+if [ $(yq e '.ashigaru.managesettings' /root/data/start9/config.yaml) = "true" ]; then
   # private bitcoin/electrum server
-  case "$(yq e '.sparrow.server.type' /root/data/start9/config.yaml)" in
+  case "$(yq e '.ashigaru.server.type' /root/data/start9/config.yaml)" in
   "bitcoind")
-    echo "Configuring Sparrow for Bitcoin Core"
-    export BITCOIND_USER=$(yq e '.sparrow.server.user' /root/data/start9/config.yaml)
-    export BITCOIND_PASS=$(yq e '.sparrow.server.password' /root/data/start9/config.yaml)
+    echo "Configuring Ashigaru Terminal for Bitcoin Core"
+    export BITCOIND_USER=$(yq e '.ashigaru.server.user' /root/data/start9/config.yaml)
+    export BITCOIND_PASS=$(yq e '.ashigaru.server.password' /root/data/start9/config.yaml)
     yq e -i '
       .serverType = "BITCOIN_CORE" |
       .coreServer = "http://127.0.0.1:8332" |
       .coreAuthType = "USERPASS" |
-      .coreAuth = strenv(BITCOIND_USER) + ":" + strenv(BITCOIND_PASS)' -o=json /config/.sparrow/config
+      .coreAuth = strenv(BITCOIND_USER) + ":" + strenv(BITCOIND_PASS)' -o=json /config/.ashigaru/config
     ;;
   "electrs")
-    echo "Configuring Sparrow for Electrs"
+    echo "Configuring Ashigaru Terminal for Electrs"
     yq e -i '
       .serverType = "ELECTRUM_SERVER" |
-      .coreServer = "tcp://127.0.0.1:50001"' -o=json /config/.sparrow/config
+      .coreServer = "tcp://127.0.0.1:50001"' -o=json /config/.ashigaru/config
     ;;
   "public")
-    echo "Configuring Sparrow for Public electrum server"
-    yq e -i '.serverType = "PUBLIC_ELECTRUM_SERVER"' -o=json /config/.sparrow/config
+    echo "Configuring Ashigaru Terminal for Public electrum server"
+    yq e -i '.serverType = "PUBLIC_ELECTRUM_SERVER"' -o=json /config/.ashigaru/config
     ;;
   *)
-    echo "Unknown server selected, not configuring Sparrow"
+    echo "Unknown server selected, not configuring Ashigaru Terminal"
     ;;
   esac
 
   # proxy
-  case "$(yq e '.sparrow.proxy.type' /root/data/start9/config.yaml)" in
+  case "$(yq e '.ashigaru.proxy.type' /root/data/start9/config.yaml)" in
   "tor")
-    echo "Configuring Sparrow for Tor"
+    echo "Configuring Ashigaru Terminal for Tor"
     export EMBASSY_IP=$(ip -4 route list match 0/0 | awk '{print $3}')
     yq e -i '
       .useProxy = true |
-      .proxyServer = strenv(EMBASSY_IP) + ":9050"' -o=json /config/.sparrow/config
+      .proxyServer = strenv(EMBASSY_IP) + ":9050"' -o=json /config/.ashigaru/config
     ;;
   "none")
-    echo "Configuring Sparrow for 'no proxy'"
-    yq e -i '.useProxy = false' -o=json /config/.sparrow/config
+    echo "Configuring Ashigaru Terminal for 'no proxy'"
+    yq e -i '.useProxy = false' -o=json /config/.ashigaru/config
     ;;
   *)
-    echo "Unknown proxy selected, not configuring Sparrow"
+    echo "Unknown proxy selected, not configuring Ashigaru Terminal"
     ;;
   esac
 fi
