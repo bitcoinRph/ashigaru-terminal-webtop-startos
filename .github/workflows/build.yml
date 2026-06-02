@@ -1,10 +1,10 @@
 name: Build
 
+# PR / on-demand validation build that uploads the .s9pk as a 14-day artifact.
+# Pushes to main are handled by the Release workflow (which publishes a GitHub
+# Release), so this does not trigger on push to avoid double builds.
 on:
   workflow_dispatch:
-  push:
-    paths-ignore: ['*.md']
-    branches: ['main']
   pull_request:
     paths-ignore: ['*.md']
     branches: ['main']
