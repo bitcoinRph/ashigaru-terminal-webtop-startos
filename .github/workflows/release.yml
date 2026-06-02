@@ -19,7 +19,8 @@ jobs:
 
   release:
     needs: guard
-    if: needs.guard.outputs.id != 'hello-world'
+    # Only publish when a release registry is configured (repo variables).
+    if: needs.guard.outputs.id != 'hello-world' && vars.RELEASE_REGISTRY != ''
     uses: start9labs/shared-workflows/.github/workflows/release.yml@master
     with:
       # FREE_DISK_SPACE: true
