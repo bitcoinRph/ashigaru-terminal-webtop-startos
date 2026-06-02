@@ -45,6 +45,10 @@ export const main = sdk.setupMain(async ({ effects }) => {
     exec: {
       command: ['/usr/local/bin/docker_entrypoint.sh'],
       env,
+      // The Webtop base image uses s6-overlay (/init), which refuses to run
+      // unless it is PID 1. Run our entrypoint as the container init so its
+      // `exec /init` becomes PID 1 and s6 can start the desktop services.
+      runAsInit: true,
     },
     ready: {
       display: i18n('Web Interface'),
