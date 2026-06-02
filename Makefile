@@ -5,7 +5,7 @@ include s9pk.mk
 
 # On a clean checkout `start-cli s9pk list-ingredients` can return nothing
 # (no node_modules/bundle yet), which leaves $(INGREDIENTS) empty and makes
-# `pack` run before the JS bundle exists. Force the bundle (and therefore
-# node_modules) to be built first by adding it as an explicit prerequisite.
-$(BASE_NAME).s9pk: javascript/index.js
-$(BASE_NAME)_%.s9pk: javascript/index.js
+# `pack` run before the JS bundle exists. The s9pk targets always run
+# `make ingredients` before packing, so attach the bundle there (an explicit
+# target — pattern-rule prerequisites would not merge into the pack recipe).
+ingredients: javascript/index.js
