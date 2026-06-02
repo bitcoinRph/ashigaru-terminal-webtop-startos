@@ -21,13 +21,13 @@ export const long = {
 
 export const alertInstall = {
   en_US:
-    'After installation, run the "Get Webtop Credentials" action to retrieve the username and password for logging into your desktop, then use "Configure Ashigaru Terminal" to choose your Bitcoin backend.',
+    'After installation, open the Web UI to access the desktop — there is no separate login; access is controlled by StartOS. Use "Configure Ashigaru Terminal" to choose your Bitcoin backend.',
   es_ES:
-    'Después de la instalación, ejecuta la acción "Obtener credenciales de Webtop" para recuperar el usuario y la contraseña de tu escritorio, y luego usa "Configurar Ashigaru Terminal" para elegir tu servidor Bitcoin.',
+    'Después de la instalación, abre la interfaz web para acceder al escritorio: no hay inicio de sesión independiente; el acceso lo controla StartOS. Usa "Configurar Ashigaru Terminal" para elegir tu servidor Bitcoin.',
   de_DE:
-    'Führe nach der Installation die Aktion „Webtop-Zugangsdaten abrufen“ aus, um Benutzername und Passwort für deinen Desktop zu erhalten, und nutze dann „Ashigaru Terminal konfigurieren“, um dein Bitcoin-Backend zu wählen.',
+    'Öffne nach der Installation die Weboberfläche, um auf den Desktop zuzugreifen – es gibt keine separate Anmeldung; der Zugriff wird von StartOS gesteuert. Nutze „Ashigaru Terminal konfigurieren“, um dein Bitcoin-Backend zu wählen.',
   pl_PL:
-    'Po instalacji uruchom akcję „Pobierz dane logowania Webtop”, aby uzyskać nazwę użytkownika i hasło do pulpitu, a następnie użyj „Skonfiguruj Ashigaru Terminal”, aby wybrać zaplecze Bitcoin.',
+    'Po instalacji otwórz interfejs webowy, aby uzyskać dostęp do pulpitu — nie ma osobnego logowania; dostęp kontroluje StartOS. Użyj „Skonfiguruj Ashigaru Terminal”, aby wybrać zaplecze Bitcoin.',
   fr_FR:
-    'Après l’installation, exécutez l’action « Obtenir les identifiants Webtop » pour récupérer le nom d’utilisateur et le mot de passe de votre bureau, puis utilisez « Configurer Ashigaru Terminal » pour choisir votre serveur Bitcoin.',
+    'Après l’installation, ouvrez l’interface web pour accéder au bureau — il n’y a pas de connexion séparée ; l’accès est contrôlé par StartOS. Utilisez « Configurer Ashigaru Terminal » pour choisir votre serveur Bitcoin.',
 }

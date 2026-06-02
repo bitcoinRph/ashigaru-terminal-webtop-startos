@@ -12,10 +12,11 @@ This package is built against the current StartOS SDK (`@start9labs/start-sdk`),
 
 ## Configuration
 
-The old Embassy config form has been replaced by **Actions**:
+The old Embassy config form has been replaced by an **Action**:
 
-- **Get Webtop Credentials** — view the username and password for logging into your desktop. A randomly generated password is created on install.
-- **Configure Ashigaru Terminal** — set the Webtop login, browser tab title, auto-reconnect, and the Bitcoin backend (Electrs, Bitcoin Core, or a public Electrum server) and proxy (Tor or none). When "Apply settings on startup" is enabled, StartOS writes these into Ashigaru's config on each start.
+- **Configure Ashigaru Terminal** — set the browser tab title, auto-reconnect, and the Bitcoin backend (Electrs, Bitcoin Core, or a public Electrum server) and proxy (Tor or none). When "Apply settings on startup" is enabled, StartOS writes these into Ashigaru's config on each start.
+
+There is **no separate Webtop login** — the Web UI opens directly and access is controlled by StartOS (Tor/LAN behind StartOS authentication).
 
 When Bitcoin Core or Electrs is selected, the corresponding StartOS service is declared as a running dependency, and a localhost `socat` tunnel lets Ashigaru reach it directly (bypassing Tor for the local hop).
 

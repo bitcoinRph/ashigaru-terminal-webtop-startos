@@ -5,32 +5,6 @@ import { storeJson } from '../fileModels/store.json'
 const { InputSpec, Value, Variants } = sdk
 
 export const inputSpec = InputSpec.of({
-  username: Value.text({
-    name: 'Username',
-    description: 'The username for logging into your Webtop desktop.',
-    required: true,
-    default: 'webtop',
-    patterns: [
-      {
-        regex: '^[^\\n"]*$',
-        description: 'Must not contain newline or quote characters.',
-      },
-    ],
-  }),
-  password: Value.text({
-    name: 'Password',
-    description: 'The password for logging into your Webtop desktop.',
-    required: true,
-    masked: true,
-    default: { charset: 'a-z,1-9', len: 20 },
-    generate: { charset: 'a-z,1-9', len: 20 },
-    patterns: [
-      {
-        regex: '^[^\\n"]*$',
-        description: 'Must not contain newline or quote characters.',
-      },
-    ],
-  }),
   title: Value.text({
     name: 'Webtop Title',
     description: 'Displayed as the title of your browser tab.',
@@ -101,7 +75,7 @@ export const configure = sdk.Action.withInput(
   async () => ({
     name: i18n('Configure Ashigaru Terminal'),
     description: i18n(
-      'Set your Webtop login and Ashigaru server/proxy settings',
+      'Set the Webtop title and Ashigaru server/proxy settings',
     ),
     warning: null,
     allowedStatuses: 'any',
@@ -117,8 +91,6 @@ export const configure = sdk.Action.withInput(
     if (!store) return null
 
     return {
-      username: store.username,
-      password: store.password,
       title: store.title,
       reconnect: store.reconnect,
       manageSettings: store.manageSettings,
@@ -139,8 +111,6 @@ export const configure = sdk.Action.withInput(
   // Persist the submitted values back to the store.
   async ({ effects, input }) =>
     storeJson.merge(effects, {
-      username: input.username,
-      password: input.password,
       title: input.title,
       reconnect: input.reconnect,
       manageSettings: input.manageSettings,

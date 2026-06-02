@@ -21,14 +21,14 @@ export const main = sdk.setupMain(async ({ effects }) => {
     'ashigaru-webtop-sub',
   )
 
-  // docker_entrypoint.sh consumes these to configure the Webtop login and,
-  // when MANAGE_SETTINGS is true, Ashigaru's server/proxy settings.
+  // docker_entrypoint.sh and the Webtop base image consume these. We
+  // intentionally do NOT set CUSTOM_USER/PASSWORD: leaving PASSWORD unset
+  // disables the image's nginx basic auth, so the Web UI opens directly and
+  // access is gated by StartOS (Tor/LAN + StartOS auth) instead.
   const env: Record<string, string> = {
     PUID: '1000',
     PGID: '1000',
     TZ: 'Etc/UTC',
-    CUSTOM_USER: store?.username ?? 'webtop',
-    PASSWORD: store?.password ?? '',
     TITLE: store?.title ?? 'Ashigaru Terminal',
     RECONNECT: String(store?.reconnect ?? false),
     MANAGE_SETTINGS: String(store?.manageSettings ?? true),

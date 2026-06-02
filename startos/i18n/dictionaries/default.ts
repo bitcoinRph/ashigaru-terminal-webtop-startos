@@ -16,10 +16,7 @@ const dict = {
 
   // actions/configure.ts
   'Configure Ashigaru Terminal': 7,
-  'Set your Webtop login and Ashigaru server/proxy settings': 8,
-
-  // init/initializeService.ts
-  'Retrieve your Webtop login credentials': 9,
+  'Set the Webtop title and Ashigaru server/proxy settings': 8,
 } as const
 
 /**
