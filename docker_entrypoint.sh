@@ -2,89 +2,70 @@
 echo
 echo "Initialising Ashigaru Terminal on Webtop..."
 echo
-export PUID=1000
-export PGID=1000
-export TZ=Etc/UTC
-export TITLE="$(yq e '.title' /root/data/start9/config.yaml)"
-export CUSTOM_USER="$(yq e '.username' /root/data/start9/config.yaml)"
-export PASSWORD="$(yq e '.password' /root/data/start9/config.yaml)"
 
-cat <<EOF >/root/data/start9/stats.yaml
-version: 2
-data:
-  "Username":
-    type: string
-    value: "$CUSTOM_USER"
-    description: "Username for logging into your Webtop."
-    copyable: true
-    qr: false
-    masked: false
-  "Password":
-    type: string
-    value: "$PASSWORD"
-    description: "Password for logging into your Webtop."
-    copyable: true
-    qr: false
-    masked: true
-EOF
+# Webtop (KasmVNC base image) reads these from the environment, set by main.ts.
+export PUID="${PUID:-1000}"
+export PGID="${PGID:-1000}"
+export TZ="${TZ:-Etc/UTC}"
 
-# Copy default files
+# Ensure an Ashigaru Terminal config exists (seed from defaults on first run).
 if [ ! -f /config/.ashigaru/config ]; then
   echo "No Ashigaru Terminal config file found, creating default"
   mkdir -p /config/.ashigaru
   cp /defaults/.ashigaru/config /config/.ashigaru/config
-  chown -R $PUID:$PGID /config/.ashigaru
+  chown -R "$PUID:$PGID" /config/.ashigaru
 fi
 
-# always overwrite autostart in case we change it
+# Always refresh the openbox autostart in case we change it between releases.
 mkdir -p /config/.config/openbox
 cp /defaults/autostart /config/.config/openbox/autostart
 chown -R abc:abc /config/.config/openbox
 
-# Manage Ashigaru Terminal settings?
-if [ $(yq e '.ashigaru.managesettings' /root/data/start9/config.yaml) = "true" ]; then
-  # private bitcoin/electrum server
-  case "$(yq e '.ashigaru.server.type' /root/data/start9/config.yaml)" in
-  "bitcoind")
+# When StartOS manages settings, write the chosen server/proxy config into the
+# Ashigaru Terminal config file. Otherwise leave it for the user to manage.
+if [ "$MANAGE_SETTINGS" = "true" ]; then
+  case "$SERVER_TYPE" in
+  bitcoind)
     echo "Configuring Ashigaru Terminal for Bitcoin Core"
-    export BITCOIND_USER=$(yq e '.ashigaru.server.user' /root/data/start9/config.yaml)
-    export BITCOIND_PASS=$(yq e '.ashigaru.server.password' /root/data/start9/config.yaml)
+    export BITCOIND_RPC_USER BITCOIND_RPC_PASS
     yq e -i '
       .serverType = "BITCOIN_CORE" |
       .coreServer = "http://127.0.0.1:8332" |
       .coreAuthType = "USERPASS" |
-      .coreAuth = strenv(BITCOIND_USER) + ":" + strenv(BITCOIND_PASS)' -o=json /config/.ashigaru/config
+      .coreAuth = strenv(BITCOIND_RPC_USER) + ":" + strenv(BITCOIND_RPC_PASS)' \
+      -o=json /config/.ashigaru/config
     ;;
-  "electrs")
+  electrs)
     echo "Configuring Ashigaru Terminal for Electrs"
     yq e -i '
       .serverType = "ELECTRUM_SERVER" |
-      .coreServer = "tcp://127.0.0.1:50001"' -o=json /config/.ashigaru/config
+      .electrumServer = "tcp://127.0.0.1:50001"' -o=json /config/.ashigaru/config
     ;;
-  "public")
-    echo "Configuring Ashigaru Terminal for Public electrum server"
+  public)
+    echo "Configuring Ashigaru Terminal for a public Electrum server"
     yq e -i '.serverType = "PUBLIC_ELECTRUM_SERVER"' -o=json /config/.ashigaru/config
     ;;
   *)
-    echo "Unknown server selected, not configuring Ashigaru Terminal"
+    echo "Unknown server type '$SERVER_TYPE', not configuring Ashigaru Terminal"
     ;;
   esac
 
-  # proxy
-  case "$(yq e '.ashigaru.proxy.type' /root/data/start9/config.yaml)" in
-  "tor")
+  case "$PROXY_TYPE" in
+  tor)
     echo "Configuring Ashigaru Terminal for Tor"
-    export EMBASSY_IP=$(ip -4 route list match 0/0 | awk '{print $3}')
+    # The StartOS Tor SOCKS proxy is reachable on the container gateway, port 9050.
+    GATEWAY_IP=$(ip -4 route list match 0/0 | awk '{print $3}')
+    export GATEWAY_IP
     yq e -i '
       .useProxy = true |
-      .proxyServer = strenv(EMBASSY_IP) + ":9050"' -o=json /config/.ashigaru/config
+      .proxyServer = strenv(GATEWAY_IP) + ":9050"' -o=json /config/.ashigaru/config
     ;;
-  "none")
+  none)
     echo "Configuring Ashigaru Terminal for 'no proxy'"
     yq e -i '.useProxy = false' -o=json /config/.ashigaru/config
     ;;
   *)
-    echo "Unknown proxy selected, not configuring Ashigaru Terminal"
+    echo "Unknown proxy type '$PROXY_TYPE', not configuring Ashigaru Terminal"
     ;;
   esac
 fi
@@ -93,12 +74,16 @@ fi
 sed -i '/<script src="public\/js\/pcm-player\.js"><\/script>/d' /kclient/public/index.html
 
 # add '&reconnect=' setting to kclient html
-RECONNECT=$(yq e '.reconnect' /root/data/start9/config.yaml)
-sed -i "s/\(index\.html?autoconnect=1\)/&\&reconnect=$RECONNECT/" /kclient/public/index.html
+sed -i "s/\(index\.html?autoconnect=1\)/&\&reconnect=${RECONNECT:-false}/" /kclient/public/index.html
 
-# setup a proxy on localhost, Sparrow will not use Tor for local addresses
-# this means we can connect straight to bitcoind/electrs and use Tor for everything else (whirlpool)
-/usr/bin/socat tcp-l:8332,fork,reuseaddr,su=nobody,bind=127.0.0.1 tcp:bitcoind.embassy:8332 &
-/usr/bin/socat tcp-l:50001,fork,reuseaddr,su=nobody,bind=127.0.0.1 tcp:electrs.embassy:50001 &
+# Localhost proxies so Ashigaru can reach bitcoind/electrs directly. Ashigaru
+# does not route localhost connections through Tor, so this lets it talk to the
+# local backend while still using Tor for everything else (e.g. Whirlpool).
+if [ "$SERVER_TYPE" = "bitcoind" ] && [ -n "$BITCOIND_HOST" ]; then
+  /usr/bin/socat tcp-l:8332,fork,reuseaddr,su=nobody,bind=127.0.0.1 tcp:"$BITCOIND_HOST":8332 &
+fi
+if [ "$SERVER_TYPE" = "electrs" ] && [ -n "$ELECTRS_HOST" ]; then
+  /usr/bin/socat tcp-l:50001,fork,reuseaddr,su=nobody,bind=127.0.0.1 tcp:"$ELECTRS_HOST":50001 &
+fi
 
 exec /init

@@ -4,66 +4,53 @@
 
 # Ashigaru Terminal on Webtop for StartOS
 
-[Webtop](https://docs.linuxserver.io/images/docker-webtop/) is an innovative Linux desktop environment that allows users to access a complete Linux desktop directly from their web browser. This repository creates the `s9pk` package that is installed to run the [Ashigaru Terminal wallet](https://github.com/linkinparkrulz/ashigaru-terminal) on a stripped down version of `Webtop` on [StartOS](https://github.com/Start9Labs/start-os/). 
+[Webtop](https://docs.linuxserver.io/images/docker-webtop/) is a Linux desktop environment accessible from a web browser. This repository builds the `s9pk` package that runs the [Ashigaru Terminal wallet](https://github.com/linkinparkrulz/ashigaru-terminal) on a stripped-down `Webtop` desktop for [StartOS](https://github.com/Start9Labs/start-os/).
 
-Ashigaru Terminal is a privacy-enhanced Bitcoin wallet forked from Sparrow v1.8.4, featuring enhanced privacy capabilities with Nightjar integration and additional privacy-focused functionality. Learn more about service packaging in the [Developer Docs](https://start9.com/latest/developer-docs/).
+Ashigaru Terminal is a non-custodial, privacy-enhanced Bitcoin wallet (a fork of Sparrow) and a dedicated Ashigaru Whirlpool client. It lets you join pools of your choice and keep building your forward and backward anonymity sets while remaining in full control of your funds throughout every stage of coinjoin cycles.
 
-## Dependencies
+This package is built against the current StartOS SDK (`@start9labs/start-sdk`), using the TypeScript packaging model: the manifest, runtime, interfaces, actions and version graph all live under [`startos/`](./startos).
 
-Install the system dependencies below to build this project by following the instructions in the provided links. You can also find detailed steps to setup your environment in the service packaging [documentation](https://docs.start9.com/latest/developer-docs/packaging#development-environment).
+## Configuration
 
-- [docker](https://docs.docker.com/get-docker)
-- [docker-buildx](https://docs.docker.com/buildx/working-with-buildx/)
-- [yq](https://mikefarah.gitbook.io/yq)
-- [deno](https://deno.land/)
+The old Embassy config form has been replaced by **Actions**:
+
+- **Get Webtop Credentials** — view the username and password for logging into your desktop. A randomly generated password is created on install.
+- **Configure Ashigaru Terminal** — set the Webtop login, browser tab title, auto-reconnect, and the Bitcoin backend (Electrs, Bitcoin Core, or a public Electrum server) and proxy (Tor or none). When "Apply settings on startup" is enabled, StartOS writes these into Ashigaru's config on each start.
+
+When Bitcoin Core or Electrs is selected, the corresponding StartOS service is declared as a running dependency, and a localhost `socat` tunnel lets Ashigaru reach it directly (bypassing Tor for the local hop).
+
+## Architecture support
+
+Ashigaru Terminal is distributed as an **amd64-only** `.deb`, so this package targets `x86_64` only.
+
+## Dependencies (build)
+
+- [docker](https://docs.docker.com/get-docker) (with [buildx](https://docs.docker.com/buildx/working-with-buildx/))
+- [Node.js / npm](https://nodejs.org/)
+- [start-cli](https://docs.start9.com/latest/developer-guide/sdk/installing-the-sdk)
 - [make](https://www.gnu.org/software/make/)
-- [start-sdk](https://github.com/Start9Labs/start-os/tree/sdk)
 
 ## Cloning
 
-Clone the Webtop package repository locally.
-
 ```
-git clone git@github.com:linkinparkrulz/ashigaru-webtop-startos.git
+git clone https://github.com/linkinparkrulz/ashigaru-webtop-startos.git
 cd ashigaru-webtop-startos
 ```
 
 ## Building
 
-To build the **Ashigaru Terminal** service as a universal package, run the following command:
-
 ```
 make
 ```
 
-Alternatively the package can be built for individual architectures by specifying the architecture as follows:
-
-```
-make x86
-```
-
-or
-
-```
-make arm
-```
+This runs `npm run check`, builds the JS bundle, builds the Docker image, and packs `ashigaru-webtop.s9pk`.
 
 ## Installing (on StartOS)
 
-Before installation, define `host: https://server-name.local` in your `~/.embassy/config.yaml` config file then run the following commands to determine successful install:
-
-> Change server-name.local to your Start9 server address
+Define `host: http://server-name.local` in `~/.startos/config.yaml`, then:
 
 ```
-start-cli auth login
-#Enter your StartOS password
 make install
 ```
 
-**Tip:** You can also install the ashigaru-webtop.s9pk by sideloading it under the **StartOS > System > Sideload a Service** section.
-
-## Verify Install
-
-Go to your StartOS Services page, select **Ashigaru Terminal**, configure and start the service.
-
-**Done!**
+**Tip:** You can also sideload the `ashigaru-webtop.s9pk` under **StartOS > System > Sideload a Service**.
