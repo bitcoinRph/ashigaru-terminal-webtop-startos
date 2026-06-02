@@ -228,3 +228,9 @@ COPY --chmod=664 icon.png /kclient/public/favicon.ico
 # ports and volumes
 EXPOSE 3000
 VOLUME /config
+
+# The final stage starts FROM scratch, which inherits no CMD/ENTRYPOINT from
+# the base image. `start-cli s9pk pack` runs `docker create` on this image to
+# export its rootfs, which fails with "no command specified" unless one is set.
+# main.ts runs this script explicitly at runtime, so this is also the default.
+CMD ["/usr/local/bin/docker_entrypoint.sh"]

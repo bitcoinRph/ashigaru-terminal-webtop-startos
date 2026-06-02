@@ -2,6 +2,9 @@ name: Build
 
 on:
   workflow_dispatch:
+  push:
+    paths-ignore: ['*.md']
+    branches: ['main']
   pull_request:
     paths-ignore: ['*.md']
     branches: ['main']
@@ -12,7 +15,8 @@ concurrency:
 
 jobs:
   build:
-    if: github.event.pull_request.draft == false
+    # Only the draft check should gate PR builds; always build on push/dispatch.
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     uses: start9labs/shared-workflows/.github/workflows/build.yml@master
     # with:
     #   FREE_DISK_SPACE: true
