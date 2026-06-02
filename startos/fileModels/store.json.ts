@@ -2,11 +2,10 @@ import { FileHelper, z } from '@start9labs/start-sdk'
 import { sdk } from '../sdk'
 
 // Persistent service state. Replaces the old Embassy config form: the Webtop
-// login credentials and the Ashigaru server/proxy selections now live here and
-// are edited through the "Configure Ashigaru Terminal" action.
+// title and the Ashigaru server/proxy selections live here and are edited
+// through the "Configure Ashigaru Terminal" action. There are no Webtop login
+// credentials — access to the Web UI is gated by StartOS.
 const shape = z.object({
-  username: z.string(),
-  password: z.string(),
   title: z.string(),
   reconnect: z.boolean(),
   // Whether StartOS manages Ashigaru's server/proxy settings on startup. When

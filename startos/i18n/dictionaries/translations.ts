@@ -10,8 +10,7 @@ export default {
     5: 'Obtener credenciales de Webtop',
     6: 'Ver el usuario y la contraseña de tu escritorio Webtop',
     7: 'Configurar Ashigaru Terminal',
-    8: 'Configura tu inicio de sesión de Webtop y los ajustes de servidor/proxy de Ashigaru',
-    9: 'Recupera las credenciales de inicio de sesión de tu Webtop',
+    8: 'Configura el título de Webtop y los ajustes de servidor/proxy de Ashigaru',
   },
   de_DE: {
     0: 'Ashigaru-Terminal-Oberfläche',
@@ -22,8 +21,7 @@ export default {
     5: 'Webtop-Zugangsdaten abrufen',
     6: 'Benutzername und Passwort für deinen Webtop-Desktop anzeigen',
     7: 'Ashigaru Terminal konfigurieren',
-    8: 'Lege deine Webtop-Anmeldung und Ashigarus Server-/Proxy-Einstellungen fest',
-    9: 'Rufe deine Webtop-Anmeldedaten ab',
+    8: 'Lege den Webtop-Titel und Ashigarus Server-/Proxy-Einstellungen fest',
   },
   pl_PL: {
     0: 'Interfejs Ashigaru Terminal',
@@ -34,8 +32,7 @@ export default {
     5: 'Pobierz dane logowania Webtop',
     6: 'Wyświetl nazwę użytkownika i hasło do pulpitu Webtop',
     7: 'Skonfiguruj Ashigaru Terminal',
-    8: 'Ustaw logowanie do Webtop oraz ustawienia serwera/proxy Ashigaru',
-    9: 'Pobierz dane logowania do Webtop',
+    8: 'Ustaw tytuł Webtop oraz ustawienia serwera/proxy Ashigaru',
   },
   fr_FR: {
     0: 'Interface Ashigaru Terminal',
@@ -46,7 +43,6 @@ export default {
     5: 'Obtenir les identifiants Webtop',
     6: 'Afficher le nom d’utilisateur et le mot de passe de votre bureau Webtop',
     7: 'Configurer Ashigaru Terminal',
-    8: 'Définissez votre connexion Webtop et les paramètres serveur/proxy d’Ashigaru',
-    9: 'Récupérez vos identifiants de connexion Webtop',
+    8: 'Définissez le titre Webtop et les paramètres serveur/proxy d’Ashigaru',
   },
 } satisfies Record<string, LangDict>

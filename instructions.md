@@ -4,9 +4,8 @@ Welcome to Ashigaru Terminal on Webtop — a privacy-enhanced Bitcoin wallet run
 
 ## Getting Started
 
-1. After install, run the **Get Webtop Credentials** action to retrieve the username and password for logging into your desktop. A strong password is generated for you automatically on install.
-2. Start the service and open the **Web UI** from the service's **Dashboard**. Your browser will prompt for the username and password from step 1.
-3. (Optional) Run the **Configure Ashigaru Terminal** action to change the login, browser tab title, auto-reconnect behavior, and — most importantly — your Bitcoin backend and proxy.
+1. Start the service and open the **Web UI** from the service's **Dashboard**. The desktop opens directly — there is no separate Webtop login. Access to the interface is controlled by StartOS (via Tor or your local network, behind StartOS's own authentication).
+2. (Optional) Run the **Configure Ashigaru Terminal** action to change the browser tab title, auto-reconnect behavior, and — most importantly — your Bitcoin backend and proxy.
 
 ## Configuring your Bitcoin backend
 
@@ -24,7 +23,7 @@ When you select Electrs or Bitcoin Core, StartOS will require that service to be
 
 1. Webtop is an immutable Linux desktop running in a container. Changes **outside** the home directory (`/config`) are **not** persisted and are lost on restart/update. The home directory is stored on a volume, persisted across restarts, and included in StartOS backups.
 2. Ashigaru Terminal stores wallets, settings, and logs in `/config/.ashigaru/`, so they survive restarts and updates and are included in backups.
-3. Webtop uses HTTPS basic authentication. Your browser prompts for credentials on first connect and remembers them until they change.
+3. There is no in-container login. The Web UI is reachable only through StartOS (Tor or LAN), so access is gated by StartOS's own authentication rather than a separate Webtop username/password.
 4. This image is Debian-based. A default Ashigaru configuration is created on first run if none exists, defaulting to the installed Electrs instance.
 5. Right-click the desktop to open the application launcher (file manager, terminal, text editor, or a second Ashigaru Terminal window). Ashigaru opens maximized — double-click its title bar to resize and see the desktop.
 6. Webtop does not support cameras or USB devices — keep this in mind when setting up wallets.
