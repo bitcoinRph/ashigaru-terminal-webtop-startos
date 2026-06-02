@@ -45,12 +45,24 @@ make
 
 This runs `npm run check`, builds the JS bundle, builds the Docker image, and packs `ashigaru-webtop.s9pk`.
 
+## Getting the `.s9pk` from CI (no local build needed)
+
+Every push to `main` — and any manual run of the **Build** workflow — compiles
+the package on GitHub's runners and uploads the `ashigaru-webtop_x86_64.s9pk`
+as a downloadable artifact (no registry or secrets required):
+
+1. Go to the repo's **Actions** tab → **Build** workflow.
+2. To build on demand, click **Run workflow** (select `main`).
+3. Open the finished run and download the `ashigaru-webtop_x86_64` artifact.
+4. Unzip it to get `ashigaru-webtop_x86_64.s9pk`.
+
 ## Installing (on StartOS)
 
-Define `host: http://server-name.local` in `~/.startos/config.yaml`, then:
+Sideload the `.s9pk` under **StartOS → System → Sideload a Service**.
+
+To build and install from the command line instead, define
+`host: http://server-name.local` in `~/.startos/config.yaml`, then:
 
 ```
 make install
 ```
-
-**Tip:** You can also sideload the `ashigaru-webtop.s9pk` under **StartOS > System > Sideload a Service**.
