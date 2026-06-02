@@ -45,16 +45,21 @@ make
 
 This runs `npm run check`, builds the JS bundle, builds the Docker image, and packs `ashigaru-webtop.s9pk`.
 
-## Getting the `.s9pk` from CI (no local build needed)
+## Getting the `.s9pk` (no local build needed)
 
-Every push to `main` — and any manual run of the **Build** workflow — compiles
-the package on GitHub's runners and uploads the `ashigaru-webtop_x86_64.s9pk`
-as a downloadable artifact (no registry or secrets required):
+### From a GitHub Release (recommended)
 
-1. Go to the repo's **Actions** tab → **Build** workflow.
-2. To build on demand, click **Run workflow** (select `main`).
-3. Open the finished run and download the `ashigaru-webtop_x86_64` artifact.
-4. Unzip it to get `ashigaru-webtop_x86_64.s9pk`.
+Every push to `main` runs the **Release** workflow, which builds the package and
+publishes `ashigaru-webtop_x86_64.s9pk` as an asset on a GitHub Release (tagged
+from the package version, e.g. `v1.0.0_0`). Download it from the repo's
+**Releases** page — no registry or secrets required. You can also cut a release
+on demand via **Actions → Release → Run workflow**.
+
+### From a Build artifact
+
+For a PR or ad-hoc build, the **Build** workflow uploads the same `.s9pk` as a
+14-day artifact: **Actions → Build → Run workflow**, then download the
+`ashigaru-webtop_x86_64` artifact from the finished run and unzip it.
 
 ## Installing (on StartOS)
 
