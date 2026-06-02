@@ -35,13 +35,11 @@ RUN \
 
 FROM ghcr.io/linuxserver/baseimage-kasmvnc:debianbookworm-64c54f55-ls117 AS buildstage
 
-# these are specified in Makefile
-ARG ARCH
-ARG PLATFORM
-ARG ASHIGARU_VERSION
-ARG ASHIGARU_COMMIT
-ARG YQ_VERSION
-ARG YQ_SHA
+# Ashigaru Terminal ships an amd64-only .deb, so this image targets x86_64.
+# yq is used by docker_entrypoint.sh to edit the Ashigaru JSON config at runtime.
+ARG PLATFORM=amd64
+ARG YQ_VERSION=4.40.7
+ARG YQ_SHA=4f13ee9303a49f7e8f61e7d9c87402e07cc920ae8dfaaa8c10d7ea1b8f9f48ed
 
 RUN \
   echo "**** install packages ****" && \
