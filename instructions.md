@@ -15,7 +15,7 @@ The **Configure Ashigaru Terminal** action lets you choose how Ashigaru connects
 - **Bitcoin Core** — uses your Bitcoin Core service. You'll provide its RPC username and password in the action.
 - **Public (not recommended)** — uses a public Electrum server. This can leak your IP and transactions; switch to a private backend as soon as possible.
 
-A **proxy** option (Tor by default) routes external connections through the **Tor service** on your StartOS server (`tor.startos:9050`). The Tor service must be installed and running for this to work — a "Tor Proxy" health check on the dashboard shows whether the proxy is reachable. When "Apply settings on startup" is enabled, StartOS writes these choices into Ashigaru's config each time the service starts; disable it to manage server/proxy settings yourself from within Ashigaru Terminal.
+A **proxy** option (Tor by default) routes external connections through the **Tor service** on your StartOS server (`tor.startos:9050`). The Tor service must be installed and running for this to work — fresh StartOS installs do **not** include it, so install "Tor" from the Marketplace (servers migrated from StartOS 0.3.6 get it automatically). A "Tor Proxy" health check on the dashboard shows whether the proxy is reachable and, if not, whether the Tor service is missing or just unhealthy. When "Apply settings on startup" is enabled, StartOS writes these choices into Ashigaru's config each time the service starts; disable it to manage server/proxy settings yourself from within Ashigaru Terminal.
 
 When you select Electrs or Bitcoin Core, StartOS will require that service to be running, and Ashigaru reaches it over a localhost tunnel so the connection bypasses Tor for that local hop.
 

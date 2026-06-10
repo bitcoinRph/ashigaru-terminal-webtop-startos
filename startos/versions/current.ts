@@ -1,18 +1,18 @@
 import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '1.0.0:3',
+  version: '1.0.0:4',
   releaseNotes: {
     en_US:
-      'Fix Tor: route Ashigaru through the StartOS Tor service (tor.startos:9050) instead of the container gateway, add the Tor service as an optional dependency, and show Tor proxy reachability as a health check.',
+      'Improve the Tor Proxy health check: it now reports whether the Tor service is missing (not installed/running) or installed but unreachable, and no longer depends on the exec PATH.',
     es_ES:
-      'Corrección de Tor: Ashigaru ahora usa el servicio Tor de StartOS (tor.startos:9050) en lugar de la puerta de enlace del contenedor, se añade el servicio Tor como dependencia opcional y se muestra la accesibilidad del proxy Tor como comprobación de salud.',
+      'Mejora la comprobación de salud del proxy Tor: ahora indica si el servicio Tor falta (no instalado o detenido) o está instalado pero inaccesible, y ya no depende del PATH de ejecución.',
     de_DE:
-      'Tor-Fix: Ashigaru nutzt jetzt den StartOS-Tor-Dienst (tor.startos:9050) statt des Container-Gateways, der Tor-Dienst ist eine optionale Abhängigkeit und die Erreichbarkeit des Tor-Proxys wird als Health-Check angezeigt.',
+      'Verbessert den Tor-Proxy-Health-Check: Er zeigt jetzt an, ob der Tor-Dienst fehlt (nicht installiert/gestartet) oder installiert, aber nicht erreichbar ist, und hängt nicht mehr vom Exec-PATH ab.',
     pl_PL:
-      'Poprawka Tor: Ashigaru korzysta teraz z usługi Tor w StartOS (tor.startos:9050) zamiast bramy kontenera, usługa Tor jest opcjonalną zależnością, a osiągalność proxy Tor jest widoczna jako kontrola stanu.',
+      'Ulepszona kontrola stanu proxy Tor: teraz wskazuje, czy usługa Tor jest nieobecna (niezainstalowana/zatrzymana), czy zainstalowana, ale nieosiągalna, i nie zależy już od PATH wykonania.',
     fr_FR:
-      'Correctif Tor : Ashigaru passe désormais par le service Tor de StartOS (tor.startos:9050) au lieu de la passerelle du conteneur, le service Tor devient une dépendance optionnelle et la joignabilité du proxy Tor est affichée comme contrôle de santé.',
+      "Améliore le contrôle de santé du proxy Tor : il indique désormais si le service Tor est absent (non installé/arrêté) ou installé mais injoignable, et ne dépend plus du PATH d'exécution.",
   },
   migrations: {
     up: async () => {},
