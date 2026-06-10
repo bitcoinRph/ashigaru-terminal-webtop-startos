@@ -60,7 +60,7 @@ export const inputSpec = InputSpec.of({
   proxy: Value.union({
     name: 'Use a proxy',
     description:
-      'Use a proxy for external connections. Tor uses the StartOS Tor proxy (recommended). None disables the proxy.',
+      'Use a proxy for external connections. Tor uses the Tor service running on your StartOS server (recommended; requires the Tor service to be installed). None disables the proxy.',
     default: 'tor',
     variants: Variants.of({
       tor: { name: 'Tor (recommended)', spec: InputSpec.of({}) },

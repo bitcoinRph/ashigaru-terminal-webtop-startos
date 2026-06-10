@@ -20,6 +20,8 @@ There is **no separate Webtop login** — the Web UI opens directly and access i
 
 When Bitcoin Core or Electrs is selected, the corresponding StartOS service is declared as a running dependency, and a localhost `socat` tunnel lets Ashigaru reach it directly (bypassing Tor for the local hop).
 
+When the Tor proxy is selected, Ashigaru is pointed at the **StartOS Tor service** (`tor.startos:9050`) — on StartOS 0.4, Tor runs as its own service and the container gateway does not expose a SOCKS port. The Tor service is declared as a running dependency, and a "Tor Proxy" health check reports whether the SOCKS proxy is reachable.
+
 ## Architecture support
 
 Ashigaru Terminal is distributed as an **amd64-only** `.deb`, so this package targets `x86_64` only.
