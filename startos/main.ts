@@ -1,6 +1,12 @@
 import { i18n } from './i18n'
 import { sdk } from './sdk'
-import { uiPort, bitcoindHost, electrsHost } from './utils'
+import {
+  uiPort,
+  bitcoindHost,
+  electrsHost,
+  torHost,
+  torSocksPort,
+} from './utils'
 import { storeJson } from './fileModels/store.json'
 
 export const main = sdk.setupMain(async ({ effects }) => {
@@ -38,9 +44,10 @@ export const main = sdk.setupMain(async ({ effects }) => {
     BITCOIND_RPC_PASS: store?.bitcoindRpcPassword ?? '',
     BITCOIND_HOST: bitcoindHost,
     ELECTRS_HOST: electrsHost,
+    TOR_PROXY: `${torHost}:${torSocksPort}`,
   }
 
-  return sdk.Daemons.of(effects).addDaemon('webui', {
+  const daemons = sdk.Daemons.of(effects).addDaemon('webui', {
     subcontainer: appSub,
     exec: {
       command: ['/usr/local/bin/docker_entrypoint.sh'],
@@ -60,4 +67,39 @@ export const main = sdk.setupMain(async ({ effects }) => {
     },
     requires: [],
   })
+
+  // When StartOS manages settings and Tor is selected, surface the Tor SOCKS
+  // proxy's reachability on the dashboard. An unreachable proxy otherwise fails
+  // silently inside Ashigaru (hung connections, unresponsive UI).
+  if (
+    (store?.manageSettings ?? true) &&
+    (store?.proxyType ?? 'tor') === 'tor'
+  ) {
+    return daemons.addHealthCheck('tor-proxy', {
+      ready: {
+        display: i18n('Tor Proxy'),
+        fn: () =>
+          sdk.healthCheck.runHealthScript(
+            [
+              'socat',
+              '-T',
+              '5',
+              '/dev/null',
+              `TCP:${torHost}:${torSocksPort},connect-timeout=5`,
+            ],
+            appSub,
+            {
+              timeout: 15_000,
+              errorMessage: i18n(
+                'The Tor SOCKS proxy is unreachable. Install and start the Tor service on your StartOS server, or set the proxy to None in "Configure Ashigaru Terminal".',
+              ),
+              message: () => i18n('The Tor SOCKS proxy is reachable'),
+            },
+          ),
+      },
+      requires: [],
+    })
+  }
+
+  return daemons
 })

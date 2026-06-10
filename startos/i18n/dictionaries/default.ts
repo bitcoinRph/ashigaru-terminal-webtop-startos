@@ -9,14 +9,13 @@ const dict = {
   'Web Interface': 2,
   'The web interface is ready': 3,
   'The web interface is not ready': 4,
-
-  // actions/getCredentials.ts
-  'Get Webtop Credentials': 5,
-  'View the username and password for your Webtop desktop': 6,
+  'Tor Proxy': 5,
+  'The Tor SOCKS proxy is reachable': 6,
+  'The Tor SOCKS proxy is unreachable. Install and start the Tor service on your StartOS server, or set the proxy to None in "Configure Ashigaru Terminal".': 7,
 
   // actions/configure.ts
-  'Configure Ashigaru Terminal': 7,
-  'Set the Webtop title and Ashigaru server/proxy settings': 8,
+  'Configure Ashigaru Terminal': 8,
+  'Set the Webtop title and Ashigaru server/proxy settings': 9,
 } as const
 
 /**

@@ -53,12 +53,13 @@ if [ "$MANAGE_SETTINGS" = "true" ]; then
   case "$PROXY_TYPE" in
   tor)
     echo "Configuring Ashigaru Terminal for Tor"
-    # The StartOS Tor SOCKS proxy is reachable on the container gateway, port 9050.
-    GATEWAY_IP=$(ip -4 route list match 0/0 | awk '{print $3}')
-    export GATEWAY_IP
+    # The Tor SOCKS proxy is provided by the StartOS 'tor' service, reachable
+    # from service containers at tor.startos:9050 (TOR_PROXY is set by main.ts).
+    # The container gateway does NOT expose a Tor SOCKS port on StartOS 0.4.
+    export TOR_PROXY="${TOR_PROXY:-tor.startos:9050}"
     yq e -i '
       .useProxy = true |
-      .proxyServer = strenv(GATEWAY_IP) + ":9050"' -o=json /config/.ashigaru/config
+      .proxyServer = strenv(TOR_PROXY)' -o=json /config/.ashigaru/config
     ;;
   none)
     echo "Configuring Ashigaru Terminal for 'no proxy'"

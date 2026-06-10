@@ -43,5 +43,11 @@ export const manifest = setupManifest({
       optional: true,
       s9pk: null,
     },
+    tor: {
+      description:
+        'Route Ashigaru Terminal traffic through the Tor network for privacy.',
+      optional: true,
+      s9pk: null,
+    },
   },
 })
