@@ -156,6 +156,25 @@ RUN \
   # Cleanup
   rm -f /tmp/ashigaru_terminal_*_amd64.deb
 
+# Ashigaru's upstream .deb ships a jpackage launcher hardcoded for HEADLESS
+# JavaFX (-Dglass.platform=Monocle -Dmonocle.platform=Headless) — a test/CI
+# configuration that renders no window and accepts no mouse/keyboard input. On
+# the Webtop desktop we need JavaFX to use its default GTK glass backend on
+# DISPLAY=:1 so the wallet actually appears and is clickable. Strip the headless
+# options from both the native launcher's .cfg and the runtime shell launcher,
+# keeping software rendering (-Dprism.order=sw), which is correct for this
+# GPU-less container. The build fails if the options can't be removed, so an
+# upstream layout change can't silently reintroduce the headless behavior.
+RUN \
+  echo "**** patch Ashigaru launcher: disable headless JavaFX ****" && \
+  cfg=/opt/ashigaru-terminal/lib/app/Ashigaru-terminal.cfg && \
+  launcher=/opt/ashigaru-terminal/lib/runtime/bin/Ashigaru-terminal && \
+  sed -i '/^java-options=-Dglass\.platform=Monocle$/d; /^java-options=-Dmonocle\.platform=Headless$/d' "$cfg" && \
+  sed -i 's/ -Dglass\.platform=Monocle -Dmonocle\.platform=Headless//g' "$launcher" && \
+  ! grep -qE 'Monocle|Headless' "$cfg" && \
+  ! grep -qE 'Monocle|Headless' "$launcher" && \
+  echo "headless JavaFX options removed"
+
 # Cleanup
 RUN \
   echo "**** cleanup ****" && \
