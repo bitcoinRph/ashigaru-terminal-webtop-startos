@@ -11,7 +11,8 @@ const dict = {
   'The web interface is not ready': 4,
   'Tor Proxy': 5,
   'The Tor SOCKS proxy is reachable': 6,
-  'The Tor SOCKS proxy is unreachable. Install and start the Tor service on your StartOS server, or set the proxy to None in "Configure Ashigaru Terminal".': 7,
+  'The Tor service was not found on your StartOS server. Install it from the Marketplace and start it, or set the proxy to None in "Configure Ashigaru Terminal".': 7,
+  'The Tor service is installed but its SOCKS proxy port is not reachable. Check that the Tor service is running and healthy.': 10,
 
   // actions/configure.ts
   'Configure Ashigaru Terminal': 8,

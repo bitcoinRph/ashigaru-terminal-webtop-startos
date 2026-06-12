@@ -70,7 +70,11 @@ export const main = sdk.setupMain(async ({ effects }) => {
 
   // When StartOS manages settings and Tor is selected, surface the Tor SOCKS
   // proxy's reachability on the dashboard. An unreachable proxy otherwise fails
-  // silently inside Ashigaru (hung connections, unresponsive UI).
+  // silently inside Ashigaru (hung connections, unresponsive UI). The check is
+  // staged so the message says *why* it failed: tor.startos only resolves while
+  // the Tor service is installed and running (fresh StartOS installs do not
+  // include it), and a resolving name with a closed port means the Tor service
+  // itself is unhealthy.
   if (
     (store?.manageSettings ?? true) &&
     (store?.proxyType ?? 'tor') === 'tor'
@@ -78,24 +82,46 @@ export const main = sdk.setupMain(async ({ effects }) => {
     return daemons.addHealthCheck('tor-proxy', {
       ready: {
         display: i18n('Tor Proxy'),
-        fn: () =>
-          sdk.healthCheck.runHealthScript(
+        fn: async () => {
+          const dns = await appSub.exec(
+            ['/usr/bin/getent', 'hosts', torHost],
+            undefined,
+            10_000,
+          )
+          if (dns.exitCode !== 0) {
+            return {
+              result: 'failure' as const,
+              message: i18n(
+                'The Tor service was not found on your StartOS server. Install it from the Marketplace and start it, or set the proxy to None in "Configure Ashigaru Terminal".',
+              ),
+            }
+          }
+
+          const tcp = await appSub.exec(
             [
-              'socat',
+              '/usr/bin/socat',
               '-T',
               '5',
               '/dev/null',
               `TCP:${torHost}:${torSocksPort},connect-timeout=5`,
             ],
-            appSub,
-            {
-              timeout: 15_000,
-              errorMessage: i18n(
-                'The Tor SOCKS proxy is unreachable. Install and start the Tor service on your StartOS server, or set the proxy to None in "Configure Ashigaru Terminal".',
+            undefined,
+            15_000,
+          )
+          if (tcp.exitCode !== 0) {
+            return {
+              result: 'failure' as const,
+              message: i18n(
+                'The Tor service is installed but its SOCKS proxy port is not reachable. Check that the Tor service is running and healthy.',
               ),
-              message: () => i18n('The Tor SOCKS proxy is reachable'),
-            },
-          ),
+            }
+          }
+
+          return {
+            result: 'success' as const,
+            message: i18n('The Tor SOCKS proxy is reachable'),
+          }
+        },
       },
       requires: [],
     })

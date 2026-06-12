@@ -1,18 +1,18 @@
 import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '1.0.0:3',
+  version: '1.0.0:4',
   releaseNotes: {
     en_US:
-      'Fix Tor: route Ashigaru through the StartOS Tor service (tor.startos:9050) instead of the container gateway, add the Tor service as an optional dependency, and show Tor proxy reachability as a health check.',
+      'Fix the wallet window not appearing / not responding to clicks: the upstream launcher forced headless JavaFX (Monocle/Headless), so no window was drawn on the desktop. It now renders normally via GTK with software rendering. Also improves the Tor Proxy health check to distinguish a missing Tor service from an unreachable one.',
     es_ES:
-      'Corrección de Tor: Ashigaru ahora usa el servicio Tor de StartOS (tor.startos:9050) en lugar de la puerta de enlace del contenedor, se añade el servicio Tor como dependencia opcional y se muestra la accesibilidad del proxy Tor como comprobación de salud.',
+      'Corrige que la ventana de la billetera no aparezca / no responda a los clics: el lanzador original forzaba JavaFX sin interfaz (Monocle/Headless), por lo que no se dibujaba ninguna ventana. Ahora se renderiza con normalidad mediante GTK con renderizado por software. También mejora la comprobación de salud del proxy Tor para distinguir un servicio Tor ausente de uno inaccesible.',
     de_DE:
-      'Tor-Fix: Ashigaru nutzt jetzt den StartOS-Tor-Dienst (tor.startos:9050) statt des Container-Gateways, der Tor-Dienst ist eine optionale Abhängigkeit und die Erreichbarkeit des Tor-Proxys wird als Health-Check angezeigt.',
+      'Behebt, dass das Wallet-Fenster nicht erscheint / nicht auf Klicks reagiert: Der Upstream-Launcher erzwang headless JavaFX (Monocle/Headless), sodass kein Fenster gezeichnet wurde. Es wird jetzt normal über GTK mit Software-Rendering dargestellt. Verbessert außerdem den Tor-Proxy-Health-Check, um einen fehlenden von einem nicht erreichbaren Tor-Dienst zu unterscheiden.',
     pl_PL:
-      'Poprawka Tor: Ashigaru korzysta teraz z usługi Tor w StartOS (tor.startos:9050) zamiast bramy kontenera, usługa Tor jest opcjonalną zależnością, a osiągalność proxy Tor jest widoczna jako kontrola stanu.',
+      'Naprawia brak okna portfela / brak reakcji na kliknięcia: program uruchamiający z upstreamu wymuszał bezgłowy JavaFX (Monocle/Headless), więc okno nie było rysowane. Teraz renderuje się normalnie przez GTK z renderowaniem programowym. Ulepsza także kontrolę stanu proxy Tor, aby odróżnić brakującą usługę Tor od nieosiągalnej.',
     fr_FR:
-      'Correctif Tor : Ashigaru passe désormais par le service Tor de StartOS (tor.startos:9050) au lieu de la passerelle du conteneur, le service Tor devient une dépendance optionnelle et la joignabilité du proxy Tor est affichée comme contrôle de santé.',
+      'Corrige la fenêtre du portefeuille qui n’apparaît pas / ne répond pas aux clics : le lanceur amont forçait JavaFX sans interface (Monocle/Headless), donc aucune fenêtre n’était dessinée. Le rendu se fait désormais normalement via GTK avec rendu logiciel. Améliore aussi le contrôle de santé du proxy Tor pour distinguer un service Tor absent d’un service injoignable.',
   },
   migrations: {
     up: async () => {},
