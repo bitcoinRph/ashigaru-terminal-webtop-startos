@@ -1,5 +1,7 @@
-# run a compositor to get transparency effects
-compton -b
+# No compositor: compton only provides cosmetic transparency, which is useless
+# on a remote wallet desktop, and compositing over KasmVNC is a known cause of
+# pointer/click coordinate artifacts. Leaving it off keeps mouse input precise.
+# (Re-enable with `compton -b` if you specifically want transparency effects.)
 
 # Create log directory
 mkdir -p /config/logs

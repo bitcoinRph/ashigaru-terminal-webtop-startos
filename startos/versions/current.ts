@@ -1,18 +1,18 @@
 import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '1.0.0:5',
+  version: '1.0.0:6',
   releaseNotes: {
     en_US:
-      'Fix a false "Tor SOCKS proxy is unreachable" error shown when the Tor service was actually installed and running. The Tor Proxy health check now opens a real TCP connection to tor.startos:9050 first (using an absolute socat path so it cannot fail to be found on PATH) and only consults DNS to explain a genuine failure, so name-resolution quirks can no longer report a reachable proxy as down.',
+      'Fix the mouse being unusable inside Ashigaru Terminal: clicks were silently dropped (the cursor moved and the keyboard worked, but nothing was clickable). JavaFX routed pointer input through XInput2, which KasmVNC does not deliver correctly; the desktop now forces legacy core X pointer events (GDK_CORE_DEVICE_EVENTS=1) and disables the cosmetic compositor, so the wallet is fully clickable.',
     es_ES:
-      'Corrige un error falso de «el proxy SOCKS de Tor es inaccesible» que aparecía cuando el servicio Tor en realidad estaba instalado y en ejecución. La comprobación de salud del proxy Tor ahora abre primero una conexión TCP real a tor.startos:9050 (con una ruta absoluta de socat para que no falle por no encontrarse en el PATH) y solo consulta el DNS para explicar un fallo real, de modo que las peculiaridades de resolución de nombres ya no pueden marcar como caído un proxy accesible.',
+      'Corrige que el ratón no funcionara dentro de Ashigaru Terminal: los clics se descartaban de forma silenciosa (el cursor se movía y el teclado funcionaba, pero no se podía hacer clic en nada). JavaFX enrutaba la entrada del puntero a través de XInput2, que KasmVNC no entrega correctamente; el escritorio ahora fuerza los eventos de puntero X clásicos (GDK_CORE_DEVICE_EVENTS=1) y desactiva el compositor cosmético, de modo que se puede hacer clic en toda la billetera.',
     de_DE:
-      'Behebt eine falsche Fehlermeldung „Tor-SOCKS-Proxy nicht erreichbar“, die angezeigt wurde, obwohl der Tor-Dienst tatsächlich installiert war und lief. Der Tor-Proxy-Health-Check öffnet jetzt zuerst eine echte TCP-Verbindung zu tor.startos:9050 (mit absolutem socat-Pfad, damit er nicht am PATH scheitern kann) und zieht DNS nur heran, um einen echten Fehler zu erklären. Eigenheiten der Namensauflösung können einen erreichbaren Proxy somit nicht mehr als ausgefallen melden.',
+      'Behebt, dass die Maus in Ashigaru Terminal unbrauchbar war: Klicks wurden stillschweigend verworfen (der Cursor bewegte sich und die Tastatur funktionierte, aber nichts war anklickbar). JavaFX leitete die Zeigereingabe über XInput2, das KasmVNC nicht korrekt liefert; der Desktop erzwingt jetzt klassische X-Zeigerereignisse (GDK_CORE_DEVICE_EVENTS=1) und deaktiviert den kosmetischen Compositor, sodass die Wallet vollständig anklickbar ist.',
     pl_PL:
-      'Naprawia fałszywy błąd „Proxy SOCKS Tora jest nieosiągalne”, pokazywany, gdy usługa Tor była w rzeczywistości zainstalowana i działała. Kontrola stanu proxy Tor najpierw otwiera teraz prawdziwe połączenie TCP z tor.startos:9050 (używając bezwzględnej ścieżki do socat, aby nie mogła zawieść z powodu PATH) i odwołuje się do DNS tylko po to, by wyjaśnić rzeczywistą awarię, więc osobliwości rozwiązywania nazw nie mogą już zgłaszać osiągalnego proxy jako niedostępnego.',
+      'Naprawia brak działania myszy w Ashigaru Terminal: kliknięcia były po cichu pomijane (kursor się poruszał, klawiatura działała, ale nic nie dało się kliknąć). JavaFX kierował wejście wskaźnika przez XInput2, którego KasmVNC nie dostarcza poprawnie; pulpit wymusza teraz klasyczne zdarzenia wskaźnika X (GDK_CORE_DEVICE_EVENTS=1) i wyłącza kosmetyczny kompozytor, dzięki czemu cały portfel jest klikalny.',
     fr_FR:
-      'Corrige une fausse erreur « le proxy SOCKS Tor est injoignable » affichée alors que le service Tor était en réalité installé et en cours d’exécution. Le contrôle de santé du proxy Tor ouvre désormais d’abord une vraie connexion TCP vers tor.startos:9050 (avec un chemin absolu vers socat afin qu’il ne puisse pas échouer faute d’être trouvé dans le PATH) et ne consulte le DNS que pour expliquer une véritable panne ; les particularités de résolution de noms ne peuvent donc plus signaler comme indisponible un proxy joignable.',
+      'Corrige la souris inutilisable dans Ashigaru Terminal : les clics étaient silencieusement ignorés (le curseur bougeait et le clavier fonctionnait, mais rien n’était cliquable). JavaFX acheminait l’entrée du pointeur via XInput2, que KasmVNC ne transmet pas correctement ; le bureau force désormais les événements de pointeur X classiques (GDK_CORE_DEVICE_EVENTS=1) et désactive le compositeur cosmétique, de sorte que tout le portefeuille est cliquable.',
   },
   migrations: {
     up: async () => {},

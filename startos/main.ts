@@ -45,6 +45,12 @@ export const main = sdk.setupMain(async ({ effects }) => {
     BITCOIND_HOST: bitcoindHost,
     ELECTRS_HOST: electrsHost,
     TOR_PROXY: `${torHost}:${torSocksPort}`,
+    // JavaFX's GTK backend consumes pointer input via XInput2, which KasmVNC
+    // does not deliver correctly: the cursor moves but clicks are dropped, so
+    // the wallet is unusable by mouse. Forcing GDK to legacy core X pointer
+    // events fixes clicking. Also set in startwm.sh; kept here so it is present
+    // no matter how the desktop session is started.
+    GDK_CORE_DEVICE_EVENTS: '1',
   }
 
   const daemons = sdk.Daemons.of(effects).addDaemon('webui', {
