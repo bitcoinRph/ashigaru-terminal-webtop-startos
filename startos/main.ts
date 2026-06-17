@@ -91,11 +91,14 @@ export const main = sdk.setupMain(async ({ effects }) => {
   // `start-container exec` with the image env-file, where a bare `socat` may
   // not resolve on PATH and would fail spuriously.
   //
-  // Only when the connect fails do we consult DNS, and then only to explain
-  // *why*: tor.startos resolves only while the Tor service is installed and
-  // running (fresh StartOS installs do not include it), so a resolution
-  // failure means the service is missing, whereas a resolving name with a
-  // closed port means the Tor service itself is unhealthy.
+  // If tor.startos:9050 does not answer, we also try the container gateway
+  // (where older StartOS exposed the host Tor) before declaring failure, and we
+  // log the exact connect error so a Tor-side problem is diagnosable from the
+  // service logs alone. Only when no path answers do we consult DNS, and then
+  // only to explain *why*: tor.startos resolves only while the Tor service is
+  // installed and running (fresh StartOS installs do not include it), so a
+  // resolution failure means the service is missing, whereas a resolving name
+  // with a closed port means the Tor service itself is unreachable/unhealthy.
   if (
     (store?.manageSettings ?? true) &&
     (store?.proxyType ?? 'tor') === 'tor'
@@ -104,24 +107,65 @@ export const main = sdk.setupMain(async ({ effects }) => {
       ready: {
         display: i18n('Tor Proxy'),
         fn: async () => {
-          const tcp = await appSub.exec(
-            [
-              '/usr/bin/socat',
-              '-T',
-              '5',
-              '/dev/null',
-              `TCP:${torHost}:${torSocksPort},connect-timeout=5`,
-            ],
-            undefined,
-            15_000,
-          )
-          if (tcp.exitCode === 0) {
+          // TCP-connect probe of a `host:port` SOCKS endpoint.
+          const probe = (target: string) =>
+            appSub.exec(
+              [
+                '/usr/bin/socat',
+                '-T',
+                '5',
+                '/dev/null',
+                `TCP:${target},connect-timeout=5`,
+              ],
+              undefined,
+              15_000,
+            )
+
+          // 1) The StartOS 'tor' package at tor.startos:9050 (normal case).
+          const primary = await probe(`${torHost}:${torSocksPort}`)
+          if (primary.exitCode === 0) {
             return {
               result: 'success' as const,
               message: i18n('The Tor SOCKS proxy is reachable'),
             }
           }
+          // Surface the *exact* reason (refused vs. timeout vs. no route) in the
+          // service logs — invaluable when the failure is on the Tor side and
+          // there is no shell on the box.
+          console.error(
+            `[tor-proxy] connect to ${torHost}:${torSocksPort} failed: ${primary.stderr
+              ?.toString()
+              .trim()}`,
+          )
 
+          // 2) Fallback: older StartOS exposed the host Tor SOCKS proxy on the
+          // container's network gateway. If the package path is broken but the
+          // gateway answers, the proxy is still usable (docker_entrypoint.sh
+          // performs the same selection for the wallet itself).
+          const gw = await appSub.exec(
+            [
+              '/bin/sh',
+              '-c',
+              "ip -4 route list match 0/0 2>/dev/null | awk '{print $3; exit}'",
+            ],
+            undefined,
+            10_000,
+          )
+          const gwIp = gw.stdout?.toString().trim()
+          if (gwIp) {
+            const viaGw = await probe(`${gwIp}:${torSocksPort}`)
+            console.error(
+              `[tor-proxy] gateway ${gwIp}:${torSocksPort} connect exit=${viaGw.exitCode}`,
+            )
+            if (viaGw.exitCode === 0) {
+              return {
+                result: 'success' as const,
+                message: i18n('The Tor SOCKS proxy is reachable'),
+              }
+            }
+          }
+
+          // 3) Neither path answered — explain why using DNS resolution.
           const dns = await appSub.exec(
             ['/usr/bin/getent', 'hosts', torHost],
             undefined,
