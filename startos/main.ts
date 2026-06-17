@@ -70,11 +70,26 @@ export const main = sdk.setupMain(async ({ effects }) => {
 
   // When StartOS manages settings and Tor is selected, surface the Tor SOCKS
   // proxy's reachability on the dashboard. An unreachable proxy otherwise fails
-  // silently inside Ashigaru (hung connections, unresponsive UI). The check is
-  // staged so the message says *why* it failed: tor.startos only resolves while
-  // the Tor service is installed and running (fresh StartOS installs do not
-  // include it), and a resolving name with a closed port means the Tor service
-  // itself is unhealthy.
+  // silently inside Ashigaru (hung connections, unresponsive UI).
+  //
+  // The check opens a real TCP connection to tor.startos:9050 first, because
+  // that is exactly what Ashigaru does and is the only signal that actually
+  // matters. We deliberately do NOT gate on a DNS lookup first: name
+  // resolution and TCP routing can disagree (e.g. NSS/getent behaving
+  // differently from the container's actual route to the Tor service), and an
+  // earlier version that probed DNS first could report "Tor not found" even
+  // though the proxy was reachable. A successful connect succeeds as soon as
+  // Tor is listening (even mid-bootstrap), and nothing else listens on that
+  // host:port, so a successful connect means the proxy is usable. Absolute
+  // binary paths are used because health-check commands run via
+  // `start-container exec` with the image env-file, where a bare `socat` may
+  // not resolve on PATH and would fail spuriously.
+  //
+  // Only when the connect fails do we consult DNS, and then only to explain
+  // *why*: tor.startos resolves only while the Tor service is installed and
+  // running (fresh StartOS installs do not include it), so a resolution
+  // failure means the service is missing, whereas a resolving name with a
+  // closed port means the Tor service itself is unhealthy.
   if (
     (store?.manageSettings ?? true) &&
     (store?.proxyType ?? 'tor') === 'tor'
@@ -83,6 +98,24 @@ export const main = sdk.setupMain(async ({ effects }) => {
       ready: {
         display: i18n('Tor Proxy'),
         fn: async () => {
+          const tcp = await appSub.exec(
+            [
+              '/usr/bin/socat',
+              '-T',
+              '5',
+              '/dev/null',
+              `TCP:${torHost}:${torSocksPort},connect-timeout=5`,
+            ],
+            undefined,
+            15_000,
+          )
+          if (tcp.exitCode === 0) {
+            return {
+              result: 'success' as const,
+              message: i18n('The Tor SOCKS proxy is reachable'),
+            }
+          }
+
           const dns = await appSub.exec(
             ['/usr/bin/getent', 'hosts', torHost],
             undefined,
@@ -97,29 +130,11 @@ export const main = sdk.setupMain(async ({ effects }) => {
             }
           }
 
-          const tcp = await appSub.exec(
-            [
-              '/usr/bin/socat',
-              '-T',
-              '5',
-              '/dev/null',
-              `TCP:${torHost}:${torSocksPort},connect-timeout=5`,
-            ],
-            undefined,
-            15_000,
-          )
-          if (tcp.exitCode !== 0) {
-            return {
-              result: 'failure' as const,
-              message: i18n(
-                'The Tor service is installed but its SOCKS proxy port is not reachable. Check that the Tor service is running and healthy.',
-              ),
-            }
-          }
-
           return {
-            result: 'success' as const,
-            message: i18n('The Tor SOCKS proxy is reachable'),
+            result: 'failure' as const,
+            message: i18n(
+              'The Tor service is installed but its SOCKS proxy port is not reachable. Check that the Tor service is running and healthy.',
+            ),
           }
         },
       },

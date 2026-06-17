@@ -1,18 +1,18 @@
 import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '1.0.0:4',
+  version: '1.0.0:5',
   releaseNotes: {
     en_US:
-      'Fix the wallet window not appearing / not responding to clicks: the upstream launcher forced headless JavaFX (Monocle/Headless), so no window was drawn on the desktop. It now renders normally via GTK with software rendering. Also improves the Tor Proxy health check to distinguish a missing Tor service from an unreachable one.',
+      'Fix a false "Tor SOCKS proxy is unreachable" error shown when the Tor service was actually installed and running. The Tor Proxy health check now opens a real TCP connection to tor.startos:9050 first (using an absolute socat path so it cannot fail to be found on PATH) and only consults DNS to explain a genuine failure, so name-resolution quirks can no longer report a reachable proxy as down.',
     es_ES:
-      'Corrige que la ventana de la billetera no aparezca / no responda a los clics: el lanzador original forzaba JavaFX sin interfaz (Monocle/Headless), por lo que no se dibujaba ninguna ventana. Ahora se renderiza con normalidad mediante GTK con renderizado por software. También mejora la comprobación de salud del proxy Tor para distinguir un servicio Tor ausente de uno inaccesible.',
+      'Corrige un error falso de «el proxy SOCKS de Tor es inaccesible» que aparecía cuando el servicio Tor en realidad estaba instalado y en ejecución. La comprobación de salud del proxy Tor ahora abre primero una conexión TCP real a tor.startos:9050 (con una ruta absoluta de socat para que no falle por no encontrarse en el PATH) y solo consulta el DNS para explicar un fallo real, de modo que las peculiaridades de resolución de nombres ya no pueden marcar como caído un proxy accesible.',
     de_DE:
-      'Behebt, dass das Wallet-Fenster nicht erscheint / nicht auf Klicks reagiert: Der Upstream-Launcher erzwang headless JavaFX (Monocle/Headless), sodass kein Fenster gezeichnet wurde. Es wird jetzt normal über GTK mit Software-Rendering dargestellt. Verbessert außerdem den Tor-Proxy-Health-Check, um einen fehlenden von einem nicht erreichbaren Tor-Dienst zu unterscheiden.',
+      'Behebt eine falsche Fehlermeldung „Tor-SOCKS-Proxy nicht erreichbar“, die angezeigt wurde, obwohl der Tor-Dienst tatsächlich installiert war und lief. Der Tor-Proxy-Health-Check öffnet jetzt zuerst eine echte TCP-Verbindung zu tor.startos:9050 (mit absolutem socat-Pfad, damit er nicht am PATH scheitern kann) und zieht DNS nur heran, um einen echten Fehler zu erklären. Eigenheiten der Namensauflösung können einen erreichbaren Proxy somit nicht mehr als ausgefallen melden.',
     pl_PL:
-      'Naprawia brak okna portfela / brak reakcji na kliknięcia: program uruchamiający z upstreamu wymuszał bezgłowy JavaFX (Monocle/Headless), więc okno nie było rysowane. Teraz renderuje się normalnie przez GTK z renderowaniem programowym. Ulepsza także kontrolę stanu proxy Tor, aby odróżnić brakującą usługę Tor od nieosiągalnej.',
+      'Naprawia fałszywy błąd „Proxy SOCKS Tora jest nieosiągalne”, pokazywany, gdy usługa Tor była w rzeczywistości zainstalowana i działała. Kontrola stanu proxy Tor najpierw otwiera teraz prawdziwe połączenie TCP z tor.startos:9050 (używając bezwzględnej ścieżki do socat, aby nie mogła zawieść z powodu PATH) i odwołuje się do DNS tylko po to, by wyjaśnić rzeczywistą awarię, więc osobliwości rozwiązywania nazw nie mogą już zgłaszać osiągalnego proxy jako niedostępnego.',
     fr_FR:
-      'Corrige la fenêtre du portefeuille qui n’apparaît pas / ne répond pas aux clics : le lanceur amont forçait JavaFX sans interface (Monocle/Headless), donc aucune fenêtre n’était dessinée. Le rendu se fait désormais normalement via GTK avec rendu logiciel. Améliore aussi le contrôle de santé du proxy Tor pour distinguer un service Tor absent d’un service injoignable.',
+      'Corrige une fausse erreur « le proxy SOCKS Tor est injoignable » affichée alors que le service Tor était en réalité installé et en cours d’exécution. Le contrôle de santé du proxy Tor ouvre désormais d’abord une vraie connexion TCP vers tor.startos:9050 (avec un chemin absolu vers socat afin qu’il ne puisse pas échouer faute d’être trouvé dans le PATH) et ne consulte le DNS que pour expliquer une véritable panne ; les particularités de résolution de noms ne peuvent donc plus signaler comme indisponible un proxy joignable.',
   },
   migrations: {
     up: async () => {},
