@@ -53,13 +53,27 @@ if [ "$MANAGE_SETTINGS" = "true" ]; then
   case "$PROXY_TYPE" in
   tor)
     echo "Configuring Ashigaru Terminal for Tor"
-    # The Tor SOCKS proxy is provided by the StartOS 'tor' service, reachable
-    # from service containers at tor.startos:9050 (TOR_PROXY is set by main.ts).
-    # The container gateway does NOT expose a Tor SOCKS port on StartOS 0.4.
-    export TOR_PROXY="${TOR_PROXY:-tor.startos:9050}"
+    # The Tor SOCKS proxy is normally the StartOS 'tor' service, reachable from
+    # service containers at tor.startos:9050 (TOR_PROXY is set by main.ts). Some
+    # setups instead reach the host Tor on the container's network gateway (the
+    # pre-0.4 location). Probe both and configure the wallet with whichever
+    # actually accepts a connection, so a change on the Tor side does not
+    # silently break the wallet. Falls back to the configured default if neither
+    # answers (the dashboard's Tor Proxy health check then explains why).
+    default_proxy="${TOR_PROXY:-tor.startos:9050}"
+    gw=$(ip -4 route list match 0/0 2>/dev/null | awk '{print $3; exit}')
+    selected_proxy=""
+    for cand in "$default_proxy" ${gw:+"$gw:9050"}; do
+      if socat -T3 /dev/null "TCP:${cand},connect-timeout=3" >/dev/null 2>&1; then
+        selected_proxy="$cand"
+        break
+      fi
+    done
+    export ASHIGARU_PROXY="${selected_proxy:-$default_proxy}"
+    echo "Using Tor SOCKS proxy: $ASHIGARU_PROXY"
     yq e -i '
       .useProxy = true |
-      .proxyServer = strenv(TOR_PROXY)' -o=json /config/.ashigaru/config
+      .proxyServer = strenv(ASHIGARU_PROXY)' -o=json /config/.ashigaru/config
     ;;
   none)
     echo "Configuring Ashigaru Terminal for 'no proxy'"
