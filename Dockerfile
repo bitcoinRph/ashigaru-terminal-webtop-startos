@@ -69,6 +69,10 @@ RUN \
     xfce4-notifyd \
     libnotify-bin \
     xclip \
+    # xdotool drives a keyboard-controlled mouse (see openbox rc.xml): it
+    # injects synthetic core-X pointer events, which JavaFX receives reliably
+    # even when raw VNC mouse/touch clicks are dropped.
+    xdotool \
     # other
     wget \
     socat \
