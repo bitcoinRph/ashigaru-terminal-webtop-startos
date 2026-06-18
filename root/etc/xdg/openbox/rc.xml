@@ -194,6 +194,54 @@
     <keyboard>
         <chainQuitKey>C-g</chainQuitKey>
 
+        <!-- Keyboard-driven mouse. JavaFX (Ashigaru) drops many raw VNC
+             mouse/touch clicks, so the wallet can be hard to operate by pointer
+             — especially from the StartOS mobile app's on-screen keyboard.
+             These bindings move and click the cursor via xdotool, which injects
+             synthetic core-X pointer events that JavaFX does receive. Super (the
+             Windows/Command key, "W-") is used because this image already binds
+             other W- keys (so it reaches the desktop) and it does not clash with
+             the wallet's own Ctrl/Alt shortcuts.
+
+             Super + Arrow keys      : move the cursor (fine, 40px)
+             Super + Shift + Arrows  : move the cursor (coarse, 160px)
+             Super + Enter           : left click (select)
+             Super + Shift + Enter   : double click (open)
+             Super + Backspace       : right click (context menu) -->
+        <keybind key="W-Up">
+            <action name="Execute"><command>xdotool mousemove_relative -- 0 -40</command></action>
+        </keybind>
+        <keybind key="W-Down">
+            <action name="Execute"><command>xdotool mousemove_relative -- 0 40</command></action>
+        </keybind>
+        <keybind key="W-Left">
+            <action name="Execute"><command>xdotool mousemove_relative -- -40 0</command></action>
+        </keybind>
+        <keybind key="W-Right">
+            <action name="Execute"><command>xdotool mousemove_relative -- 40 0</command></action>
+        </keybind>
+        <keybind key="W-S-Up">
+            <action name="Execute"><command>xdotool mousemove_relative -- 0 -160</command></action>
+        </keybind>
+        <keybind key="W-S-Down">
+            <action name="Execute"><command>xdotool mousemove_relative -- 0 160</command></action>
+        </keybind>
+        <keybind key="W-S-Left">
+            <action name="Execute"><command>xdotool mousemove_relative -- -160 0</command></action>
+        </keybind>
+        <keybind key="W-S-Right">
+            <action name="Execute"><command>xdotool mousemove_relative -- 160 0</command></action>
+        </keybind>
+        <keybind key="W-Return">
+            <action name="Execute"><command>xdotool click 1</command></action>
+        </keybind>
+        <keybind key="W-S-Return">
+            <action name="Execute"><command>xdotool click --repeat 2 --delay 40 1</command></action>
+        </keybind>
+        <keybind key="W-BackSpace">
+            <action name="Execute"><command>xdotool click 3</command></action>
+        </keybind>
+
         <!-- Keybindings for desktop switching -->
         <keybind key="C-A-Left">
             <action name="GoToDesktop">

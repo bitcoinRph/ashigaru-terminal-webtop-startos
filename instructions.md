@@ -32,6 +32,33 @@ When you select Electrs or Bitcoin Core, StartOS will require that service to be
 
 Ashigaru Terminal is based on Sparrow but adds enhanced privacy capabilities, including Nightjar integration and Tor-by-default networking, as a dedicated Ashigaru Whirlpool client.
 
+## Navigating with the keyboard (keyboard-driven mouse)
+
+Ashigaru Terminal is a JavaFX application, and JavaFX does not always receive
+raw mouse/touch clicks from the remote desktop reliably — this is especially
+noticeable from the StartOS **mobile app**, where taps may not register. To make
+the wallet fully operable without a working pointer, you can move and click the
+cursor entirely from the keyboard (including the on-screen keyboard). Hold the
+**Super** key — the **⊞ Windows** key on a PC keyboard, **⌘ Command** on a Mac,
+or the **Super/Meta** key on the on-screen keyboard — together with:
+
+| Keys | Action |
+| --- | --- |
+| **Super + Arrow keys** | Move the cursor (fine, 40px steps — hold to repeat) |
+| **Super + Shift + Arrows** | Move the cursor (coarse, 160px steps) |
+| **Super + Enter** | Left click — selects the item under the cursor |
+| **Super + Shift + Enter** | Double click — opens the item under the cursor |
+| **Super + Backspace** | Right click — opens the context menu |
+
+So to switch between wallet sections (Transactions, Send, Receive, Addresses,
+UTXOs, Settings), move the cursor onto the one you want with **Super + Arrows**
+and press **Super + Enter**. This works anywhere in the wallet — opening or
+importing a wallet, signing, receiving, and dialog buttons.
+
+Tip: JavaFX also supports standard keyboard navigation — **Tab** / **Shift+Tab**
+move focus between controls, arrow keys move within a list, and **Space** /
+**Enter** activate the focused control.
+
 ## Control Panel
 
 The KasmVNC control panel is on the left edge of the Webtop interface. See the [KasmVNC client documentation](https://www.kasmweb.com/kasmvnc/docs/latest/clientside.html) for details.
